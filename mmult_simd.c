@@ -24,15 +24,7 @@ int mmult(double *c,
 	      double *a, int aRows, int aCols, 
 	      double *b, int bRows, int bCols) {
 
-    // for(int i = 0; i < aRows; ++i) {
-    //     for(int j = 0; j < bCols; ++j) {
-    //         c[i * bCols + j] = 0;
-    //         for(int k = 0; k < aRows; ++k) {
-    //             c[i * bCols + j] += a[i * aRows + k] * b[k * bCols + j];
-    //         }
-    //     }
-    // }
-
+    // SIMD WITHOUT vectorization
     for (int i = 0; i < aRows; i++) {
         for (int j = 0; j < bCols; j++)
             c[i * bCols + j] = 0;

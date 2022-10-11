@@ -7,9 +7,16 @@
 
 #include "mat.h"
 #include <sys/time.h>
+// SIMD: Single Instruction Multiple Data
+// OMP: OpenMP -> an application programming interface that supports multi-platform shared-memory multiprocessing programming in C,
+// MPI: Message Passing Interface
+
+
 int generate_data(int matrix_size, char *output_filename)
 {
     FILE *fp;
+    // deletes contents of file
+  
     fp = fopen(output_filename, "a");
 
     struct timeval stop, start;
@@ -43,6 +50,6 @@ int main()
     for (int i = 5; i < 500; i += 5)
     {
         printf("tested matrix size %d\n", i);
-        generate_data(i, "mmult_simd.out");
+        generate_data(i, "data/mmult_simd.out");
     }
 }
