@@ -31,19 +31,23 @@ int generate_data( FILE* fp, int matrix_size)
 
     uint64_t diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
     // milliseconds 
-    fprintf(fp, "\n%d, %d",   diff / (uint64_t) 1e6,matrix_size );
+    fprintf(fp, "\n%d, %d", matrix_size, diff / (uint64_t) 1e6);
     free(result);
     free(a);
     free(b);
 }
 
-int main()
+int main( int argc , char ** argv)
 {
-    char * output_filename = "data/mmult.out";
+    if(argc !=2 ) {
+        puts("Usage: generate_data <outfile>");
+        return -1;
+    }
+    char * output_filename = argv[1];
     FILE *fp =  fopen(output_filename, "w");
     for (int i = 5; i < 500; i += 5)
     {
-        printf("tested matrix size %d\n", i);
+        // printf("tested matrix size %d\n", i);
         generate_data(fp, i);
     }
     fclose(fp);

@@ -5,5 +5,6 @@ set output 'photos/main.png'
 #set key inside bottom right
 set xlabel 'Matrix size'
 set ylabel 'Time (msec)'
-set title 'Matrix multiplication: SIMD VS NOSIMD'
-plot  "data/mmult.out"  title 'mmult' with lines, "data/mmult_simd.out"  title 'mmult simd' with lines,"data/mmult_parallelization.out"  title 'mmult parallelization' with lines,"data/mmult_simd_vectorized.out"  title 'mmult simd vectorized' with lines
+set title 'Matrix multiplication: Main Graph'
+plot  "data/nosimd.out"  title 'nosimd' with lines, "data/simd.out"  title 'simd' with lines, "data/O3.out" \
+  title 'O3' with lines,"data/noO3.out"  title 'no O3' with lines

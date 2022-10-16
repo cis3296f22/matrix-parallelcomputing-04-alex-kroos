@@ -3,7 +3,7 @@ set output 'photos/mmult.png'
 
 # Key means label...
 #set key inside bottom right
-set ylabel 'Matrix size'
-set xlabel 'Time (msec)'
+set xlabel 'Matrix size'
+set ylabel 'Time (msec)'
 set title 'Matrix multiplication: mmmult'
 plot  "data/mmult.out"  title 'mmult' with lines
