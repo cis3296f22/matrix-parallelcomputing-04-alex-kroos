@@ -4,22 +4,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
 #include "mat.h"
-#include <sys/time.h>
+#include <stdint.h>	
+#define BILLION 1000000000L
 // SIMD: Single Instruction Multiple Data
 // OMP: OpenMP -> an application programming interface that supports multi-platform shared-memory multiprocessing programming in C,
 // MPI: Message Passing Interface
 
-
-int generate_data(int matrix_size, char *output_filename)
+int generate_data( FILE* fp, int matrix_size)
 {
-    FILE *fp;
-    // deletes contents of file
-  
-    fp = fopen(output_filename, "a");
-
-    struct timeval stop, start;
+    struct timespec start;
+    struct timespec end;
     int rows, cols;
 
     rows = matrix_size;
@@ -30,15 +25,13 @@ int generate_data(int matrix_size, char *output_filename)
     a = gen_matrix(rows, cols);
     b = gen_matrix(rows, cols);
     
-    gettimeofday(&start, NULL);
+    clock_gettime(CLOCK_REALTIME, &start);
     mmult(result, a, rows, cols, b, rows, cols);
-    gettimeofday(&stop, NULL);
+    clock_gettime(CLOCK_REALTIME, &end);
 
-    // this is in seconds
-    double time_taken = (double)(stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
-
-    fprintf(fp, "\n%f, %d", time_taken * 1000  , matrix_size);
-    fclose(fp);
+    uint64_t diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+    // milliseconds 
+    fprintf(fp, "\n%d, %d",   diff / (uint64_t) 1e6,matrix_size );
     free(result);
     free(a);
     free(b);
@@ -46,10 +39,12 @@ int generate_data(int matrix_size, char *output_filename)
 
 int main()
 {
-
+    char * output_filename = "data/mmult.out";
+    FILE *fp =  fopen(output_filename, "w");
     for (int i = 5; i < 500; i += 5)
     {
         printf("tested matrix size %d\n", i);
-        generate_data(i, "data/mmult_simd.out");
+        generate_data(fp, i);
     }
+    fclose(fp);
 }
