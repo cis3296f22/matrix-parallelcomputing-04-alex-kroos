@@ -43,6 +43,7 @@ int main(int argc, char* argv[])
             bb = gen_matrix(ncols, nrows);
             cc1 = malloc(sizeof(double) * nrows * nrows);
             starttime = MPI_Wtime();
+
             /* Insert your controller code here to store the product into cc1 */
             numsent = 0;
             MPI_Bcast(b, ncols, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -61,13 +62,15 @@ int main(int argc, char* argv[])
                 anstype = status.MPI_TAG;
                 c[anstype-1] = ans;
 
+                //calculation
                 if (numsent < nrows) {
                   for (j = 0; j < ncols; j++) 
                     buffer[j] = aa[numsent*ncols + j];
-                  
-                  MPI_Send(buffer, ncols, MPI_DOUBLE, sender, numsent+1,
-                           MPI_COMM_WORLD);
-                  numsent++;
+                
+                //sedning the parts to the other worker 
+                MPI_Send(buffer, ncols, MPI_DOUBLE, sender, numsent+1,
+                        MPI_COMM_WORLD);
+                numsent++;
                 }else {MPI_Send(MPI_BOTTOM, 0, MPI_DOUBLE, sender, 0,MPI_COMM_WORLD);}
             }
 
@@ -79,21 +82,23 @@ int main(int argc, char* argv[])
         } 
         else 
         {
-        // Worder code goes here
+        // Worker code goes here
         I_Bcast(b, ncols, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         if (myid <= nrows) {
             while(1) 
             {
+                //recving buffer(the matrix) from the sender
                 MPI_Recv(buffer, ncols, MPI_DOUBLE, 0,
                 MPI_ANY_TAG, MPI_COMM_WORLD, &status);
                 
+                //if the host sends out a zero then we stop this loop
                 if (status.MPI_TAG == 0){break;}
                 
                 row = status.MPI_TAG;
                 ans = 0.0;
                 
+                //OMP
                 #pragma omp shared(ans) for reduction(+:ans)
-              
                 for (j = 0; j < ncols; j++)
                     ans += buffer[j] * b[j];
                 MPI_Send(&ans, 1, MPI_DOUBLE, 0, row,MPI_COMM_WORLD);
