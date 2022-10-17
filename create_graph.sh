@@ -33,7 +33,7 @@ echo "Finished OMP"
 echo "Testing MPI & OMP"
 for ((i=5; i<500; i+=5))
 do
-    mpicc -fopenmp -O3 mat.c mmult_mpi.c -o mpi &&  ./mpi $i
+    mpicc -fopenmp -O3 mat.c mmult_simd.c mmult_mpi.c -o mpi &&  mpiexec -f ~/hosts -n 4 ./mpi $i
 done
 echo "Finished MPI & OMP"
 
