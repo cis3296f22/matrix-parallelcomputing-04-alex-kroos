@@ -3,7 +3,7 @@
  * MPI to distribute the computation among nodes and OMP
  * to distribute the computation among threads.
  */
-
+#include <stdint.h>	
 #include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,18 +12,18 @@
 #define min(x, y) ((x)<(y)?(x):(y))
 
 #include "mat.h"
-
+#define BILLION 1000000000L
 int main(int argc, char* argv[])
 {
     int nrows, ncols;
-    double *aa;	/* the A matrix */
+    double *aa, *b, *c;	/* the A matrix */
     double *bb;	/* the B matrix */
     double *cc1;	/* A x B computed using the omp-mpi code you write */
     double *cc2;	/* A x B computed using the conventional algorithm */
     int myid, numprocs;
     double starttime, endtime;
     MPI_Status status;
-
+    double *buffer, ans;
     /* insert other global variables here */
     int i, j, numsent, sender;
     int anstype, row;
@@ -75,15 +75,26 @@ int main(int argc, char* argv[])
             }
 
             endtime = MPI_Wtime();
-            printf("%f\n",(endtime - starttime));
+            
             cc2  = malloc(sizeof(double) * nrows * nrows);
+
+
+            struct timespec start;
+            struct timespec end;
+
+            FILE *fp = fopen("./data/mpi.out","w");
+            clock_gettime(CLOCK_REALTIME, &start);
             mmult(cc2, aa, nrows, ncols, bb, ncols, nrows);
-            compare_matrices(cc2, cc1, nrows, nrows);
+            clock_gettime(CLOCK_REALTIME, &end);
+
+             uint64_t diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+            // milliseconds 
+            fprintf(fp, "\n%d, %d", nrows, diff / (uint64_t) 1e6);
         } 
         else 
         {
         // Worker code goes here
-        I_Bcast(b, ncols, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(b, ncols, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         if (myid <= nrows) {
             while(1) 
             {
@@ -105,7 +116,7 @@ int main(int argc, char* argv[])
             }
         } 
     }
-    }else {fprintf(stderr, "Usage matrix_times_vector <size>\n");}
+    }
 
 
     MPI_Finalize();
