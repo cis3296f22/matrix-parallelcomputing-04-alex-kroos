@@ -3,7 +3,7 @@
  * MPI to distribute the computation among nodes and OMP
  * to distribute the computation among threads.
  */
-#include <stdint.h>	
+
 #include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +12,7 @@
 #define min(x, y) ((x)<(y)?(x):(y))
 
 #include "mat.h"
-#define BILLION 1000000000L
+
 int main(int argc, char* argv[])
 {
     int nrows, ncols;
@@ -77,19 +77,8 @@ int main(int argc, char* argv[])
             endtime = MPI_Wtime();
             
             cc2  = malloc(sizeof(double) * nrows * nrows);
-
-
-            struct timespec start;
-            struct timespec end;
-
-            FILE *fp = fopen("./data/mpi.out","w");
-            clock_gettime(CLOCK_REALTIME, &start);
             mmult(cc2, aa, nrows, ncols, bb, ncols, nrows);
-            clock_gettime(CLOCK_REALTIME, &end);
-
-             uint64_t diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
-            // milliseconds 
-            fprintf(fp, "\n%d, %d", nrows, diff / (uint64_t) 1e6);
+            compare_matrices(cc2, cc1, nrows, nrows);
         } 
         else 
         {
@@ -116,7 +105,7 @@ int main(int argc, char* argv[])
             }
         } 
     }
-    }
+    }else {fprintf(stderr, "Usage matrix_times_vector <size>\n");}
 
 
     MPI_Finalize();
