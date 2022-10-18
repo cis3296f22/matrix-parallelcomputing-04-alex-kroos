@@ -31,7 +31,7 @@ int generate_data( FILE* fp, int matrix_size)
 
     uint64_t diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
     // milliseconds 
-    fprintf(fp, "\n%d, %d", matrix_size, diff / (uint64_t) 1e6);
+    fprintf(fp, "\n%d, %ld", matrix_size, diff / (uint64_t) 1e6);
     free(result);
     free(a);
     free(b);

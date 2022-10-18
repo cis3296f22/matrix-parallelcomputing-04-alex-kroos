@@ -29,11 +29,11 @@ gcc -fopenmp -O3 mat.c mmult_omp.c generate_data.c -o generate_data && ./generat
 echo "Finished OMP"
 
 # # MPI & OMP
-# echo "Testing MPI & OMP"
+ echo "Testing MPI & OMP"
 
-# mpicc -fopenmp -O3 mat.c  mmult_mpi_omp.c -o mpi &&  mpiexec -n 2 ./mpi $i
+ mpicc -fopenmp -O3 mat.c  mmult_mpi_omp.c -o mpi &&  mpiexec -n 2 ./mpi $i
 
-# echo "Finished MPI & OMP"
+ echo "Finished MPI & OMP"
 
 # removes the executable 
 rm generate_data
